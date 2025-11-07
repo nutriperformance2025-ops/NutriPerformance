@@ -1,46 +1,34 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import indexRoutes from "./routes/index.js";
 import materiaRoutes from "./routes/materia.routes.js";
 import clasificacionRoutes from "./routes/clasificacion.routes.js";
 
+dotenv.config();
+
 const app = express();
 
-// ======================
-// 🔹 CONFIGURAR CORS
-// ======================
-const FRONTEND_URL = "http://localhost:3000";
-app.use(
-    cors({
-        origin: FRONTEND_URL,
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
+// CORS: permite 1 o varios orígenes desde ENV (o * mientras pruebas)
+const origins = (process.env.CORS_ORIGIN || "*").split(",");
+app.use(cors({
+    origin: origins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-// ======================
-// 🔹 MIDDLEWARES BASE
-// ======================
 app.use(express.json());
 
-// ======================
-// 🔹 RUTAS
-// ======================
+// Rutas API
 app.use("/api", indexRoutes);
 app.use("/api/materias", materiaRoutes);
 app.use("/api/clasificaciones", clasificacionRoutes);
 
-// ======================
-// 🔹 RUTA DE PRUEBA (opcional)
-// ======================
-app.get("/api/ping", (req, res) => {
-    res.json({ ok: true, message: "Servidor backend operativo 🚀" });
-});
+// Healthchecks
+app.get("/health", (_req, res) => res.send("OK"));      // fácil de probar en Render
 
-// ======================
-// 🔹 INICIAR SERVIDOR AQUÍ
-// ======================
-const PORT = 4000;
-app.listen(PORT, () => {
-    console.log(`✅ Servidor backend corriendo en http://localhost:${PORT}`);
+// Arranque: puerto de Render y bind 0.0.0.0
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`✅ API escuchando en puerto ${PORT}`);
 });
