@@ -1,3 +1,4 @@
+// src/app.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -9,25 +10,31 @@ dotenv.config();
 
 const app = express();
 
-// CORS: permite 1 o varios orígenes desde ENV (o * mientras pruebas)
+// 🟢 Configuración CORS — admite múltiples orígenes desde .env
 const origins = (process.env.CORS_ORIGIN || "*").split(",");
 app.use(cors({
     origin: origins,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
+// Middleware para parsear JSON
 app.use(express.json());
 
-// Rutas API
+// 🔗 Rutas principales de la API
 app.use("/api", indexRoutes);
 app.use("/api/materias", materiaRoutes);
 app.use("/api/clasificaciones", clasificacionRoutes);
 
-// Healthchecks
-app.get("/health", (_req, res) => res.send("OK"));      // fácil de probar en Render
+// 🌿 Ruta raíz para Render y pruebas de despliegue
+app.get("/", (_req, res) => {
+    res.send("🌿 NutriPerformance API desplegada correctamente en Render ✅");
+});
 
-// Arranque: puerto de Render y bind 0.0.0.0
+// 🩺 Healthcheck (para verificar estado del servicio)
+app.get("/health", (_req, res) => res.send("OK"));
+
+// 🚀 Arranque del servidor (puerto dinámico para Render)
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`✅ API escuchando en puerto ${PORT}`);
