@@ -1,3 +1,4 @@
+// src/controllers/materia.controller.js
 import {
     getMaterias,
     getPromedioComposicionByMateriaId,
@@ -11,7 +12,8 @@ export async function listMaterias(req, res) {
         const data = await getMaterias({ q, clasificacionId });
         res.json(data);
     } catch (e) {
-        console.error(e);
+        // Log detallado para ver el error real en Render > Logs
+        console.error("listMaterias ERROR:", e);
         res.status(500).json({ error: 'Error listando materias' });
     }
 }
@@ -24,7 +26,7 @@ export async function getPromedioByMateria(req, res) {
         if (!data) return res.status(404).json({ error: 'Materia no encontrada' });
         res.json(data);
     } catch (e) {
-        console.error(e);
+        console.error("getPromedioByMateria ERROR:", e);
         res.status(500).json({ error: 'Error obteniendo composición promedio' });
     }
 }
@@ -36,7 +38,7 @@ export async function getPromedioComposicion(req, res) {
         const data = await getPromediosComposicion({ materiaId, clasificacionId });
         res.json(data);
     } catch (e) {
-        console.error(e);
+        console.error("getPromedioComposicion ERROR:", e);
         res.status(500).json({ error: 'Error obteniendo promedios de composición' });
     }
 }
